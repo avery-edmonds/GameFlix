@@ -1,13 +1,30 @@
-FROM openjdk:17.0.2-jdk-slim-bullseye
+# ---------- 1) Build stage ----------
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
-VOLUME /tmp
+# Work directory inside the container
+WORKDIR /app
 
-ARG JAR_FILE=target/GameFlix-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app.jar
+# Copy pom.xml and download dependencies (for better cache)
+COPY pom.xml .
+RUN mvn -q dependency:go-offline
 
-# Make Spring Boot listen on all interfaces
-ENV SPRING_OUTPUT_ANSI_ENABLED=ALWAYS \
-    JAVA_OPTS="" \
-    SPRING_PROFILES_ACTIVE=default
+# Copy source code
+COPY src ./src
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app.jar"]
+# Build the Spring Boot fat jar (skip tests for speed)
+RUN mvn -q clean package -DskipTests
+
+
+# ---------- 2) Runtime stage ----------
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+# Copy the jar from the build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose Spring Boot's default port
+EXPOSE 8080
+
+# Start the app
+ENTRYPOINT ["java", "-jar", "app.jar"]
