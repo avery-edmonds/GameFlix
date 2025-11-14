@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   mysql:
     image: mysql:8.0
@@ -5,7 +7,7 @@ services:
     container_name: demo-mysql
     environment:
       MYSQL_ROOT_PASSWORD: "root"  # demo password (OK for classroom)
-      MYSQL_DATABASE: demo_db
+      MYSQL_DATABASE: 1234
     ports:
       - "3307:3306"                # host:container
     volumes:
@@ -29,7 +31,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/gameflix?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: "root"
+      SPRING_DATASOURCE_PASSWORD: "1234"
     networks:
       - demo-net
 
