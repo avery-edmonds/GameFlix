@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gameflix</title>
+    <link href="https:////cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+</head>
+<style>
+    :root {
+        --primary-orange: #ff6b35;
+        --secondary-orange: #ff8c42;
+        --dark-bg: #1a1a1a;
+        --card-bg: #2d2d2d;
+        --hover-bg: #3a3a3a;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+    }
+
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-primary);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar {
+        background-color: var(--card-bg);
+        padding: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-brand {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--primary-orange) !important;
+    }
+
+    .navbar-brand i {
+        margin-right: 0.5rem;
+    }
+
+    .nav-link {
+        color: var(--text-primary) !important;
+        transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+        color: var(--primary-orange) !important;
+    }
+
+    .search-bar {
+        background-color: var(--hover-bg);
+        border: 1px solid #4a4a4a;
+        color: var(--text-primary);
+        border-radius: 6px;
+        padding: 0.6rem 1rem;
+    }
+
+    .search-bar:focus {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        border-radius: 12px;
+        border: 1px solid var(--primary-orange);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 140, 66, 0.05));
+    }
+
+    .hero-section .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+        border-left: 4px solid var(--primary-orange);
+        padding-left: 1rem;
+    }
+
+    .game-card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        margin-bottom: 2rem;
+        border: 1px solid #3a3a3a;
+    }
+
+    .game-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+        border-color: var(--primary-orange);
+    }
+
+    .game-card img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .game-card-body {
+        padding: 1.25rem;
+    }
+
+    .game-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+    }
+
+    .game-meta {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.75rem;
+    }
+
+    .play-btn {
+        background-color: var(--primary-orange);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: background-color 0.3s;
+        width: 100%;
+    }
+
+    .play-btn:hover {
+        background-color: var(--secondary-orange);
+    }
+
+    .badge-new {
+        background-color: var(--primary-orange);
+        color: white;
+        padding: 0.3rem 0.7rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge-rental {
+        background-color: #4a4a4a;
+        color: var(--text-primary);
+        padding: 0.3rem 0.7rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        display: inline-block;
+    }
+
+    .category-badge {
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        display: inline-block;
+        margin: 0.25rem;
+        transition: all 0.3s;
+        border: 1px solid #4a4a4a;
+    }
+
+    .category-badge:hover {
+        background-color: var(--primary-orange);
+        color: white;
+        border-color: var(--primary-orange);
+    }
+
+    .sidebar {
+        background-color: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #3a3a3a;
+    }
+
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--primary-orange);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-orange);
+        border-color: var(--primary-orange);
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-orange);
+        border-color: var(--secondary-orange);
+    }
+
+    .stats-box {
+        background-color: var(--hover-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 3px solid var(--primary-orange);
+    }
+
+    .stats-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-orange);
+    }
+
+    .game-price {
+        color: var(--primary-orange);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .quick-action {
+        background-color: var(--card-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        border: 1px solid #4a4a4a;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .quick-action:hover {
+        border-color: var(--primary-orange);
+        background-color: var(--hover-bg);
+    }
+</style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#" th:href="@{/}">
+            <i class="fas fa-gamepad"></i>Gameflix
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/games}">All Games</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/library}">My Library</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/subscriptions}">Subscriptions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/deals}">Deals</a>
+                </li>
+            </ul>
+            <form class="d-flex me-3">
+                <input class="form-control search-bar" type="search" placeholder="Search games..." aria-label="Search">
+            </form>
+            <div class="d-flex align-items-center">
+                <img th:src="${user?.avatar}" src="https://via.placeholder.com/45" alt="User" class="user-avatar me-2">
+                <span th:text="${user?.username}">Guest</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<div class="container-fluid mt-4">
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Stream. Play. Anywhere.</h1>
+            <p class="lead">Play the latest AAA games instantly on any device with cloud gaming technology</p>
+            <button class="btn btn-primary btn-lg me-2">
+                <i class="fas fa-play me-2"></i>Start Playing
+            </button>
+            <button class="btn btn-outline-light btn-lg">
+                <i class="fas fa-gift me-2"></i>View Subscription Plans
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main Content Area -->
+        <div class="col-lg-9">
+            <!-- Continue Playing Section -->
+            <section class="mb-5" th:if="${recentGames != null and !recentGames.isEmpty()}">
+                <h2 class="section-title">
+                    <i class="fas fa-history me-2"></i>Continue Playing
+                </h2>
+                <div class="row">
+                    <div class="col-md-4" th:each="game : ${recentGames}">
+                        <div class="game-card">
+                            <img th:src="${game.thumbnail}" src="https://via.placeholder.com/400x250" th:alt="${game.title}">
+                            <div class="game-card-body">
+                                <h5 class="game-title" th:text="${game.title}">Game Title</h5>
+                                <p class="game-meta">
+                                    Progress: <span th:text="${game.progress}">45</span>% complete
+                                </p>
+                                <button class="play-btn">
+                                    <i class="fas fa-play me-2"></i>Resume
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Releases Section -->
+            <section class="mb-5">
+                <h2 class="section-title">
+                    <i class="fas fa-star me-2"></i>New Releases
+                </h2>
+                <div class="row">
+                    <div class="col-md-4" th:each="game : ${newReleases}">
+                        <div class="game-card">
+                            <img th:src="${game.thumbnail}" src="https://via.placeholder.com/400x250" th:alt="${game.title}">
+                            <div class="game-card-body">
+                                <span class="badge-new">NEW</span>
+                                <h5 class="game-title" th:text="${game.title}">New Game Title</h5>
+                                <p class="game-meta">
+                                    <span th:text="${game.genre}">Action</span> •
+                                    <span th:text="${game.releaseDate}">Dec 2024</span>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="game-price" th:text="${game.price}">$4.99/day</span>
+                                    <span class="badge-rental">Rent</span>
+                                </div>
+                                <button class="play-btn mt-2">
+                                    <i class="fas fa-play me-2"></i>Play Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Games Section -->
+            <section class="mb-5">
+                <h2 class="section-title">
+                    <i class="fas fa-fire me-2"></i>Most Played
+                </h2>
+                <div class="row">
+                    <div class="col-md-3" th:each="game : ${popularGames}">
+                        <div class="game-card">
+                            <img th:src="${game.thumbnail}" src="https://via.placeholder.com/300x250" th:alt="${game.title}">
+                            <div class="game-card-body">
+                                <h5 class="game-title" th:text="${game.title}">Popular Game</h5>
+                                <p class="game-meta">
+                                    <i class="fas fa-users me-1"></i>
+                                    <span th:text="${game.activePlayers}">10K</span> playing now
+                                </p>
+                                <span class="game-price" th:text="${game.price}">$3.99/day</span>
+                                <button class="play-btn mt-2">
+                                    <i class="fas fa-play me-2"></i>Play
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommended Section -->
+            <section class="mb-5">
+                <h2 class="section-title">
+                    <i class="fas fa-thumbs-up me-2"></i>Recommended For You
+                </h2>
+                <div class="row">
+                    <div class="col-md-4" th:each="game : ${recommendedGames}">
+                        <div class="game-card">
+                            <img th:src="${game.thumbnail}" src="https://via.placeholder.com/400x250" th:alt="${game.title}">
+                            <div class="game-card-body">
+                                <h5 class="game-title" th:text="${game.title}">Recommended Game</h5>
+                                <p class="game-meta">
+                                    <span th:text="${game.genre}">RPG</span> •
+                                    <i class="fas fa-star text-warning"></i>
+                                    <span th:text="${game.rating}">4.5</span>/5
+                                </p>
+                                <span class="game-price" th:text="${game.price}">$5.99/day</span>
+                                <button class="play-btn mt-2">
+                                    <i class="fas fa-play me-2"></i>Play Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <!-- User Stats -->
+            <div class="sidebar">
+                <h4 class="section-title">Your Gaming Stats</h4>
+                <div class="stats-box">
+                    <div class="stats-number" th:text="${userStats?.hoursPlayed}">127</div>
+                    <small class="text-muted">Hours Played</small>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-number" th:text="${userStats?.gamesOwned}">24</div>
+                    <small class="text-muted">Games in Library</small>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-number" th:text="${userStats?.achievementsUnlocked}">89</div>
+                    <small class="text-muted">Achievements</small>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="sidebar">
+                <h4 class="section-title">Quick Actions</h4>
+                <div class="quick-action">
+                    <i class="fas fa-crown text-warning me-2"></i>
+                    <strong>Upgrade to Premium</strong>
+                    <p class="mb-0 small text-muted">Unlimited access to all games</p>
+                </div>
+                <div class="quick-action">
+                    <i class="fas fa-gift me-2" style="color: var(--primary-orange);"></i>
+                    <strong>Redeem Code</strong>
+                    <p class="mb-0 small text-muted">Enter your gift card</p>
+                </div>
+                <div class="quick-action">
+                    <i class="fas fa-headset me-2" style="color: var(--primary-orange);"></i>
+                    <strong>Support</strong>
+                    <p class="mb-0 small text-muted">Need help? Contact us</p>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="sidebar">
+                <h4 class="section-title">Browse by Genre</h4>
+                <div>
+                    <span class="category-badge" th:each="category : ${categories}" th:text="${category}">Action</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

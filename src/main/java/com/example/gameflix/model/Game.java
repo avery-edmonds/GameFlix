@@ -28,6 +28,8 @@ public class Game {
 
     private String coverImage;
 
+    private String link;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
@@ -52,4 +54,7 @@ public class Game {
 
     public String getCoverImage() { return coverImage; }
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
+
+    public String getLink() { return link; }
+    public void setLink(String link) { this.link = link; }
 }

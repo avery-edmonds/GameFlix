@@ -19,30 +19,22 @@ public class Friend {
     private Date friendsSince;
 
     @ManyToOne
-    @JoinColumn(name = "friend_id")
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    public int getUserId() {
-        return userId;
-    }
+    @ManyToOne
+    @JoinColumn(name = "friend_id", insertable = false, updatable = false)
+    private User friend;
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public int getFriendId() {
-        return friendId;
-    }
+    public int getFriendId() { return friendId; }
+    public void setFriendId(int friendId) { this.friendId = friendId; }
 
-    public void setFriendId(int friendId) {
-        this.friendId = friendId;
-    }
+    public Date getFriendsSince() { return friendsSince; }
+    public void setFriendsSince(Date friendsSince) { this.friendsSince = friendsSince; }
 
-    public Date getFriendsSince() {
-        return friendsSince;
-    }
-
-    public void setFriendsSince(Date friendsSince) {
-        this.friendsSince = friendsSince;
-    }
+    public User getUser() { return user; }
+    public User getFriend() { return friend; }
 }

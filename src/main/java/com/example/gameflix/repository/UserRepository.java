@@ -8,14 +8,17 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     @JsonIgnore
     public Map<String, User> users = new HashMap();
 
     Optional<User> findByUsername(String username);
+
+    List<User> findByUsernameContainingIgnoreCase(String username);
 
     public default boolean existsByUsername(String username){
         return users.containsKey(username);

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gameflix - Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">Gameflix</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">Dashboard</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="games.html">All Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="library.html">My Library</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="lists.html">My Lists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="friends.html">Friends</a>
+                    </li>
+                </ul>
+                <form class="d-flex me-3" onsubmit="return searchGames(event)">
+                    <input class="form-control search-bar" type="search" id="searchInput" placeholder="Search games..." aria-label="Search">
+                </form>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-primary" onclick="logout()">Logout</button>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="container-fluid mt-4">
+        <div class="loading">
+            <div class="spinner-border" role="status"></div>
+            <p class="mt-3">Loading game details...</p>
+        </div>
+    </div>
+
+    <!-- Game Content (hidden initially) -->
+    <div id="gameContent" style="display: none;">
+        <!-- Game Hero Section -->
+        <div class="container-fluid mt-4">
+            <div class="game-hero" id="gameHero">
+                <div class="game-hero-overlay">
+                    <h1 class="game-title-hero" id="gameTitle">Game Title</h1>
+                    <div class="game-meta-hero">
+                        <div class="rating-large" id="ratingDisplay">
+                            <span class="star">★</span>
+                            <span id="avgRating">0.0</span>
+                            <span style="color: #a0a0a0;">(<span id="reviewCount">0</span> reviews)</span>
+                        </div>
+                        <span class="badge" id="genreBadge">Genre</span>
+                        <span id="releaseYear">2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Game Description -->
+                    <div class="info-section">
+                        <h2 class="section-title">About This Game</h2>
+                        <p id="gameDescription" style="line-height: 1.8;">
+                            Loading description...
+                        </p>
+                    </div>
+
+                    <!-- Game Details -->
+                    <div class="info-section">
+                        <h2 class="section-title">Game Details</h2>
+                        <div class="game-specs">
+                            <div class="spec-item">
+                                <div class="spec-label">Developer</div>
+                                <div class="spec-value" id="gameDeveloper">-</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-label">Genre</div>
+                                <div class="spec-value" id="gameGenre">-</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-label">Release Date</div>
+                                <div class="spec-value" id="gameReleaseDate">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <div class="info-section">
+                        <h2 class="section-title">Player Reviews</h2>
+                        
+                        <!-- Write Review -->
+                        <div class="write-review-box" id="writeReviewBox" style="display: none;">
+                            <h4>Write a Review</h4>
+                            <form id="reviewForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Your Rating</label>
+                                    <div class="star-rating" id="starRating">
+                                        <span data-rating="1">★</span>
+                                        <span data-rating="2">★</span>
+                                        <span data-rating="3">★</span>
+                                        <span data-rating="4">★</span>
+                                        <span data-rating="5">★</span>
+                                    </div>
+                                    <input type="hidden" id="ratingValue" value="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewText" class="form-label">Your Review</label>
+                                    <textarea class="form-control" id="reviewText" required placeholder="Share your thoughts about this game..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+
+                        <!-- Existing Reviews -->
+                        <div class="mt-4" id="reviewsContainer">
+                            <div class="loading">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Play Section -->
+                    <div class="info-section text-center">
+                        <button class="play-btn-large w-100 mb-3" id="playButton" onclick="playGame()">
+                            Play Now
+                        </button>
+                        <button class="btn-wishlist w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addToListModal">
+                            Add to List
+                        </button>
+                        <button class="btn-wishlist w-100" id="addToLibraryBtn" onclick="addToLibrary()">
+                            Add to Library
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to List Modal -->
+    <div class="modal fade" id="addToListModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add to List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="listsModalBody">
+                    <div class="loading">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get('id');
+        const currentUserId = localStorage.getItem('userId');
+        const currentUsername = localStorage.getItem('username') || 'Guest';
+        const API_URL = "http://localhost:8080";
+
+        console.log(currentUserId);
+        console.log(currentUsername);
+
+        let currentGame = null;
+        let userHasReviewed = false;
+
+        // Load game details
+        async function loadGameDetails() {
+            try {
+                const response = await fetch(`${API_URL}/games/${gameId}`);
+                currentGame = await response.json();
+                
+                // Update hero section
+                document.getElementById('gameTitle').textContent = currentGame.title;
+                document.getElementById('genreBadge').textContent = currentGame.genre ? currentGame.genre.name : 'Unknown';
+                
+                if (currentGame.releaseDate) {
+                    document.getElementById('releaseYear').textContent = new Date(currentGame.releaseDate).getFullYear();
+                }
+                
+                // Set background image
+                if (currentGame.coverImage) {
+                    document.getElementById('gameHero').style.backgroundImage = `url(${currentGame.coverImage})`;
+                }
+                
+                // Update details
+                document.getElementById('gameDescription').textContent = currentGame.description || 'No description available.';
+                document.getElementById('gameDeveloper').textContent = currentGame.developer || 'Unknown';
+                document.getElementById('gameGenre').textContent = currentGame.genre ? currentGame.genre.name : 'Unknown';
+                
+                if (currentGame.releaseDate) {
+                    const date = new Date(currentGame.releaseDate);
+                    document.getElementById('gameReleaseDate').textContent = date.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                }
+                
+                
+                // Show content, hide loading
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('gameContent').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading game:', error);
+                alert('Failed to load game details');
+            }
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const response = await fetch(`${API_URL}/reviews/game/${gameId}`);
+                const reviews = await response.json();
+                
+                const container = document.getElementById('reviewsContainer');
+                
+                // Calculate average rating
+                if (reviews.length > 0) {
+                    const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+                    document.getElementById('avgRating').textContent = avgRating.toFixed(1);
+                    document.getElementById('reviewCount').textContent = reviews.length;
+                    
+                    // Check if user has already reviewed
+                    userHasReviewed = reviews.some(r => r.user && r.user.id === parseInt(currentUserId));
+                }
+                
+                // Show write review box if user hasn't reviewed
+                if (!userHasReviewed) {
+                    document.getElementById('writeReviewBox').style.display = 'block';
+                }
+                
+                // Display reviews
+                if (reviews.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-4">
+                            <h4>No reviews yet</h4>
+                            <p class="text">Be the first to review this game!</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '';
+                    reviews.forEach(review => {
+                        container.innerHTML += createReviewCard(review);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        // Create review card
+        function createReviewCard(review) {
+            const username = review.user ? review.user.username : 'Anonymous';
+            const date = new Date(review.reviewDate).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += i <= review.rating ? '<span class="star">★</span>' : '<span class="star-empty">★</span>';
+            }
+            
+            const isOwnReview = review.user && review.user.id === parseInt(currentUserId);
+            
+            return `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div>
+                                <div class="reviewer-name">${username}</div>
+                                <div class="review-date">${date}</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">${stars}</div>
+                    </div>
+                    <p class="review-text">${review.reviewText}</p>
+                    ${isOwnReview ? `
+                        <div class="review-actions">
+                            <button class="review-action-btn" onclick="deleteReview(${review.reviewId})">
+                                Delete Review
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Star rating functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('#starRating span');
+            const ratingInput = document.getElementById('ratingValue');
+            
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    ratingInput.value = rating;
+                    
+                    stars.forEach((s, index) => {
+                        if (index < rating) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+
+        // Submit review
+        document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const rating = document.getElementById('ratingValue').value;
+            const reviewText = document.getElementById('reviewText').value;
+            
+            if (rating == 0) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user: { id: parseInt(currentUserId) },
+                        game: { gameId: parseInt(gameId) },
+                        rating: parseInt(rating),
+                        reviewText: reviewText
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Review submitted successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Failed to submit review');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to submit review');
+            }
+        });
+
+        // Delete review
+        async function deleteReview(reviewId) {
+            if (confirm('Are you sure you want to delete this review?')) {
+                try {
+                    const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('Review deleted successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete review');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to delete review');
+                }
+            }
+        }
+
+         // Search games
+        function searchGames(event) {
+            event.preventDefault();
+            const query = document.getElementById('searchInput').value;
+            if (query.trim()) {
+                window.location.href = `games.html?search=${encodeURIComponent(query)}`;
+            }
+            return false;
+        }
+
+        // Play game
+        function playGame() {
+            if (currentGame && currentGame.link) {
+                window.open(currentGame.link, '_blank');
+            } else {
+                alert('Game link not available');
+            }
+        }
+
+        // Add to library
+        async function addToLibrary() {
+            try {
+                const response = await fetch(`${API_URL}/libraries`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user: { id: parseInt(currentUserId) },
+                        game: { gameId: parseInt(gameId) },
+                        purchaseDate: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Game added to your library!');
+                    document.getElementById('addToLibraryBtn').textContent = 'Already in Library';
+                    document.getElementById('addToLibraryBtn').disabled = true;
+                } else {
+                    alert('Failed to add to library');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add to library');
+            }
+        }
+
+        // Load user lists for modal
+        async function loadUserLists() {
+            try {
+                const response = await fetch(`${API_URL}/api/lists/user/${currentUserId}`);
+                const lists = await response.json();
+                
+                const container = document.getElementById('listsModalBody');
+                
+                if (lists.length === 0) {
+                    container.innerHTML = `
+                        <p class="text text-center">You don't have any lists yet.</p>
+                        <button class="btn btn-primary w-100" onclick="window.location.href='lists.html'">
+                            Create a List
+                        </button>
+                    `;
+                } else {
+                    container.innerHTML = '';
+                    lists.forEach(list => {
+                        container.innerHTML += `
+                            <div class="list-item" onclick="addToList(${list.listId})">
+                                ${list.listName}
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading lists:', error);
+            }
+        }
+
+        // Add to list
+        async function addToList(listId) {
+            try {
+                const response = await fetch(`${API_URL}/list-games`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        list: { listId: listId },
+                        game: { gameId: parseInt(gameId) }
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Game added to list!');
+                    bootstrap.Modal.getInstance(document.getElementById('addToListModal')).hide();
+                } else {
+                    alert('Failed to add to list');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add to list');
+            }
+        }
+
+        // Load lists when modal is opened
+        document.getElementById('addToListModal').addEventListener('show.bs.modal', function() {
+            loadUserLists();
+        });
+
+        // Check authentication
+        function checkAuth() {
+            if (!currentUserId) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        //Log Out
+        async function logout() {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("username");
+        window.location.href="login.html";
+      }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            checkAuth();
+            if (!gameId) {
+                alert('No game specified');
+                window.location.href = 'games.html';
+                return;
+            }
+            loadGameDetails();
+            loadReviews();
+        });
+    </script>
+</body>
+</html>

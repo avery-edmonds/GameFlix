@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/libraries")
+@CrossOrigin(origins = "*")
 public class UserLibraryController {
 
     private final UserLibraryService userLibraryService;

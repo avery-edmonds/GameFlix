@@ -1,36 +1,38 @@
-package com.example.gameflix.config;
-
+/*package com.example.gameflix.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-@Configuration
-@EnableWebSecurity
+
+//@Configuration
+//@EnableWebSecurity
 public class Security {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // Disable CSRF for Postman testing
-                .csrf(AbstractHttpConfigurer::disable)
-
-                // Allow unauthenticated access to these endpoints
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login").permitAll()
+                        .requestMatchers("/login-page", "/api/login", "/api/register", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
-
-                // Disable form login (optional, since you're using JSON API)
-                .formLogin(AbstractHttpConfigurer::disable)
-
-                // Disable HTTP Basic (optional too)
-                .httpBasic(AbstractHttpConfigurer::disable);
+                .formLogin(form -> form
+                        .loginPage("/login-page")          // GET page
+                        .loginProcessingUrl("/login")      // POST URL
+                        .defaultSuccessUrl("/dashboard", true) // After login
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login-page")
+                        .permitAll()
+                );
 
         return http.build();
     }
-}
+}*/

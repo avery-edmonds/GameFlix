@@ -9,6 +9,11 @@ public class FriendId implements Serializable {
 
     public FriendId() {}
 
+    public FriendId(Integer userId, Integer friendId) {
+        this.userId = userId;
+        this.friendId = friendId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

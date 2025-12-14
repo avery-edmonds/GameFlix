@@ -4,54 +4,42 @@ import com.example.gameflix.model.User;
 import com.example.gameflix.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.print.attribute.standard.PrintQuality;
 import java.util.List;
 
 @Service
 public class UserService {
 
-    @Autowired
+
     private UserRepository userRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+    //private BCryptPasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        //this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public String register(User user) {
-       var result = userRepository.findByUsername(user.getUsername());
-
-        if (result.isPresent()) {
-            return "Username already exists";
-        }
-
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-        userRepository.save(user);
-        return "User registered successfully";
+    public List<User> searchByUsername(String username) {
+        return userRepository.findByUsernameContainingIgnoreCase(username);
     }
 
     public List<User> getAllUsers() { return userRepository.findAll(); }
 
-    public User getUserById(Long id) {
+    public User getUserById(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public String login(User user) {
-        var result = userRepository.findByUsername(user.getUsername());
-        if (result.isEmpty()) {
-            return "Invalid username or password";
-        }
+    public User login(String username, String password) {
+       User user;
 
-        boolean matches = passwordEncoder.matches(user.getPassword(), result.get().getPassword());
-        if (matches) {
-            return "Login successful";
+       user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!user.getPassword().equals(password)){
+            throw new RuntimeException("Invalid Username/Email or Password!");
         }
-        else{
-            return "Invalid username or password";
-        }
+        return userRepository.findById(user.getId()).orElseThrow(()-> new RuntimeException("User not found"));
     }
 
 

@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/genres")
+@CrossOrigin(origins = "*")
 public class GenreController {
 
     private final GenreService genreService;
